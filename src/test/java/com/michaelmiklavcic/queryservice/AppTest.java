@@ -26,4 +26,11 @@ public class AppTest {
     verify(shape).getValue();
   }
 
+  @Test
+  public void testMock(@Mock Shape shape) {
+    AppMain.config(shape);
+    AppMain.main(null);
+    verify(shape).getValue();
+  }
+
 }

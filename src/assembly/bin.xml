@@ -18,7 +18,7 @@
             <directory>${project.build.directory}</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>*-shaded.jar</include>
+                <include>*-uber.jar</include>
             </includes>
         </fileSet>
         <fileSet>
