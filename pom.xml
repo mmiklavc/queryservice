@@ -29,7 +29,7 @@
         <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
 
         <!-- main dependency versions -->
-        <spring-boot-starter-web.version>2.2.2.RELEASE</spring-boot-starter-web.version>
+        <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <log4j2.version>2.13.0</log4j2.version>
@@ -54,9 +54,17 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring-boot-starter-web.version}</version>
+                <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -81,6 +89,18 @@
 
             <!-- Test Deps -->
 
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.junit.vintage</groupId>
+                        <artifactId>junit-vintage-engine</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -145,6 +165,10 @@
         <!-- Test Deps -->
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
         </dependency>
@@ -171,6 +195,7 @@
     </dependencies>
 
     <build>
+<!--
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -181,7 +206,7 @@
                         <createDependencyReducedPom>true</createDependencyReducedPom>
                         <artifactSet>
                             <excludes>
-                                <!-- Exclude all JUnit deps from the uber jar -->
+                                &lt;!&ndash; Exclude all JUnit deps from the uber jar &ndash;&gt;
                                 <exclude>org.junit*:*</exclude>
                             </excludes>
                         </artifactSet>
@@ -222,6 +247,7 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+-->
 
         <plugins>
             <plugin>
@@ -261,6 +287,7 @@
                     </execution>
                 </executions>
             </plugin>
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -274,6 +301,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -287,9 +315,24 @@
                     </execution>
                 </executions>
             </plugin>
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.2.RELEASE</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
