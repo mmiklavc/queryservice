@@ -195,7 +195,6 @@
     </dependencies>
 
     <build>
-<!--
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -247,7 +246,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
--->
 
         <plugins>
             <plugin>
@@ -287,21 +285,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -315,12 +298,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-            </plugin>
--->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
