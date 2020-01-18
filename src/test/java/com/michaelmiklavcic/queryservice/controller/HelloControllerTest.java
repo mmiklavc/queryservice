@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice;
+package com.michaelmiklavcic.queryservice.controller;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;

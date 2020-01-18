@@ -5,29 +5,37 @@ Welcome to the project
 #### Running project from command line
 
 ```bash
-mvn exec:java -Dexec.mainClass="com.michaelmiklavcic.queryservice.AppMain"
+# Normal
+java -jar target/service-core-1.0-SNAPSHOT.jar
+# Debug mode
+java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n -jar target/service-core-1.0-SNAPSHOT.jar
 ```
 
-#### Cutting a release for service-core
+#### Production Deployment
 
-```bash
-mvn release:prepare -Dscm-connection.url=<scm readonly url> -Dscm-developer-connection.url=<scm read-write url>
-```
+Spring Boot Actuator has been added for production-ready features such as: HTTP endpoints or JMX to monitor the application. Auditing, health, and metrics gathering can also be automatically applied to the application.
 
-**Note**: The main pom assumes "scm:git:<url>" - simply pass in the URL portion as a build parameter as shown above.
+By default, we expose only the `health` and `info` endpoints, which is also the Spring Boot default. More details on how to manage the endpoints and expose additional functionality is available below.
 
-Examples: [maven scm] (http://maven.apache.org/scm/git.html)
+View the exposed Actuator endpoints by going to [http://&lt;hostname&gt;:&lt;port&gt;/actuator/](http://<hostname>:<port>/actuator/)
 
-1. local git - file://localhost/foo/bar/mygitrepodir
-1. github connection url (readonly) - git://github.com/mmiklavc/myproject.git
-1. github developer connection url (read/write) - git@github.com:mmiklavc/myproject.git
+**Enabling Endpoints**
 
-Performing the release prepare will do the following high-level steps:
+Instructions for enabling Actuator endpoints can be found here - [Enabling Endpoints](https://docs.spring.io/spring-boot/docs/2.2.2.RELEASE/reference/htmlsingle/#production-ready-endpoints-enabling-endpoints)
 
-1. Change pom versions from X.X-SNAPSHOT to X.X
-1. Commit the new poms for the release to Git
-1. Tag the release commit in Git
-1. Increment poms to a new SNAPSHOT version, e.g. Update from X.0-SNAPSHOT to X.1-SNAPSHOT
-1. Commit the updated SNAPSHOT poms
+A list of available endpoints can be found here - [Spring Actuator Endpoints](https://docs.spring.io/spring-boot/docs/2.2.2.RELEASE/reference/htmlsingle/#production-ready-endpoints)
 
-*See [Maven release prepare] (http://maven.apache.org/maven-release/maven-release-plugin/examples/prepare-release.html) documentation for more detail*
+#### Spring Notes
+
+Project structure
+* controller - sets up the REST endpoints
+* service - 
+* Application - main application entry point. Enabl
+
+`@SpringBootApplication` is a meta-annotation that pulls in component scanning, auto-configuration, and property support.
+
+**Reference**
+
+* https://spring.io/guides/gs/spring-boot/
+* https://docs.spring.io/spring-boot/docs/2.2.2.RELEASE/reference/htmlsingle
+* https://spring.io/guides/tutorials/rest/

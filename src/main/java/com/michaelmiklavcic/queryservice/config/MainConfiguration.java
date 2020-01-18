@@ -16,17 +16,11 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice.controller;
+package com.michaelmiklavcic.queryservice.config;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.annotation.Configuration;
 
-@RestController
-public class HelloController {
-
-  @RequestMapping("/")
-  public String index() {
-    return "Greetings from Spring Boot!";
-  }
+@Configuration
+public class MainConfiguration {
 
 }
