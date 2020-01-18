@@ -1,0 +1,5 @@
+# Main configuration entry point for the application
+
+# Enable/disable and expose/hide web enpoints for Actuator admin services
+management.endpoints.web:
+  exposure.include: info, health
