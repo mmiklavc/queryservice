@@ -1,4 +1,4 @@
-package com.michaelmiklavcic.queryservice;
+package com.michaelmiklavcic.queryservice.demo;
 
 public interface Shape {
 

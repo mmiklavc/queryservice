@@ -1,4 +1,4 @@
-package com.michaelmiklavcic.queryservice;
+package com.michaelmiklavcic.queryservice.demo;
 
 import java.lang.invoke.MethodHandles;
 import org.apache.logging.log4j.LogManager;

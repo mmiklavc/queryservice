@@ -16,24 +16,14 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice;
+package com.michaelmiklavcic.queryservice.demo.resource;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
+import com.michaelmiklavcic.queryservice.demo.controller.HelloController;
+import com.michaelmiklavcic.queryservice.model.Hello;
 
-//@SpringBootApplication
-public class Application {
+public class HelloResourceAssembler extends SimpleIdentifiableRepresentationModelAssembler<Hello> {
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+  public HelloResourceAssembler() {
+    super(HelloController.class);
   }
-
-//  @Bean
-  public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-    return args -> {
-      System.out.println("Let's inspect the beans provided by Spring Boot:");
-    };
-  }
-
 }

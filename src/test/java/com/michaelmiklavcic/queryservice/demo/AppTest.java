@@ -1,4 +1,4 @@
-package com.michaelmiklavcic.queryservice;
+package com.michaelmiklavcic.queryservice.demo;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -6,6 +6,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.michaelmiklavcic.queryservice.demo.AppMain;
+import com.michaelmiklavcic.queryservice.demo.Shape;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
