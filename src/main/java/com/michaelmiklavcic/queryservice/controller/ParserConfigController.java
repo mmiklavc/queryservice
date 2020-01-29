@@ -16,24 +16,26 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice.demo;
+package com.michaelmiklavcic.queryservice.controller;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
+import com.michaelmiklavcic.queryservice.model.ParserChain;
+import com.michaelmiklavcic.queryservice.service.ParserConfigService;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-//@SpringBootApplication
-public class Application {
+@RestController
+public class ParserConfigController {
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
-  }
+  @Autowired
+  private ParserConfigService service;
 
-//  @Bean
-  public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-    return args -> {
-      System.out.println("Let's inspect the beans provided by Spring Boot:");
-    };
+  @GetMapping("/parserconfigs")
+  ResponseEntity<List<ParserChain>> findAll() {
+    List<ParserChain> configs = service.findAll();
+    return ResponseEntity.ok(configs);
   }
 
 }

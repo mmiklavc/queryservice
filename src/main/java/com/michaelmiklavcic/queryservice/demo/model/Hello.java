@@ -16,24 +16,31 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice.demo;
+package com.michaelmiklavcic.queryservice.demo.model;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
+public class Hello {
 
-//@SpringBootApplication
-public class Application {
+  private String name;
+  private int id;
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+  public Hello(String name, int id) {
+    this.name = name;
+    this.id = id;
   }
 
-//  @Bean
-  public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-    return args -> {
-      System.out.println("Let's inspect the beans provided by Spring Boot:");
-    };
+  public void setName(String name) {
+    this.name = name;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
 }

@@ -23,4 +23,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MainConfiguration {
 
+//  @Bean
+//  public SimpleRepresentationModelAssembler<ParserChain> modelAssembler() {
+//    return new BasicModelAssembler<>();
+//  }
 }

@@ -16,24 +16,21 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice.demo;
+package com.michaelmiklavcic.queryservice.model;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
 
-//@SpringBootApplication
-public class Application {
+public class BasicModelAssembler<T> implements SimpleRepresentationModelAssembler<T> {
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+  @Override
+  public void addLinks(EntityModel<T> resource) {
+
   }
 
-//  @Bean
-  public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-    return args -> {
-      System.out.println("Let's inspect the beans provided by Spring Boot:");
-    };
-  }
+  @Override
+  public void addLinks(CollectionModel<EntityModel<T>> resources) {
 
+  }
 }

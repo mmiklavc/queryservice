@@ -19,7 +19,7 @@
 package com.michaelmiklavcic.queryservice.demo.resource;
 
 import com.michaelmiklavcic.queryservice.demo.controller.HelloController;
-import com.michaelmiklavcic.queryservice.model.Hello;
+import com.michaelmiklavcic.queryservice.demo.model.Hello;
 
 public class HelloResourceAssembler extends SimpleIdentifiableRepresentationModelAssembler<Hello> {
 

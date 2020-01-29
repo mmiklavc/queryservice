@@ -21,7 +21,7 @@ package com.michaelmiklavcic.queryservice.demo.controller;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import com.michaelmiklavcic.queryservice.model.Hello;
+import com.michaelmiklavcic.queryservice.demo.model.Hello;
 import com.michaelmiklavcic.queryservice.demo.resource.HelloResourceAssembler;
 import java.util.Arrays;
 import java.util.List;
