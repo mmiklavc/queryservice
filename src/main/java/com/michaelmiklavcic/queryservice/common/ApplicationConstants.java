@@ -16,41 +16,14 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice.service;
+package com.michaelmiklavcic.queryservice.common;
 
-import com.michaelmiklavcic.queryservice.model.ParserChain;
-import java.util.Arrays;
-import java.util.List;
-import org.springframework.stereotype.Service;
+public class ApplicationConstants {
 
-@Service
-public class FileBasedParserConfigService implements ParserConfigService {
-
-  @Override
-  public List<ParserChain> findAll() {
-    return Arrays.asList(
-        new ParserChain("1", "chain1"),
-        new ParserChain("2", "chain2"),
-        new ParserChain("3", "chain3"));
-  }
-
-  @Override
-  public ParserChain create(ParserChain chain) {
-    return null;
-  }
-
-  @Override
-  public ParserChain read(String id) {
-    return null;
-  }
-
-  @Override
-  public ParserChain update(String id) {
-    return null;
-  }
-
-  @Override
-  public boolean delete(String id) {
-    return false;
-  }
+  public static final String API_BASE_URL = "/api/v1/parserconfig";
+  public static final String API_CHAINS_URL = API_BASE_URL + "/chains";
+  public static final String API_CHAINS_CREATE_URL = API_CHAINS_URL + "/{id}";
+  public static final String API_CHAINS_READ_URL = API_CHAINS_CREATE_URL;
+  public static final String API_CHAINS_UPDATE_URL = API_CHAINS_CREATE_URL;
+  public static final String API_CHAINS_DELETE_URL = API_CHAINS_CREATE_URL;
 }

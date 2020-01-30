@@ -1,7 +1,5 @@
 # service-core
 
-Welcome to the project
-
 ### Running project from command line
 
 ```bash
@@ -28,11 +26,30 @@ A list of available endpoints can be found here - [Spring Actuator Endpoints](ht
 ### Spring Notes
 
 Project structure
-* controller - sets up the REST endpoints
-* service - 
+* controller - sets up the REST endpoints.
+* service - core business logic occurs here.
 * Application - main application entry point.
 
 `@SpringBootApplication` is a meta-annotation that pulls in component scanning, auto-configuration, and property support.
+
+#### Logging
+
+Modifying log level
+By default, logging is set to a nice and quiet WARN level in the application.yml file packaged with the application. This can be changed via passing a property on the CLI, e.g.
+```commandline
+java -Dlogging.level.root=INFO -jar target/service-core-1.0-SNAPSHOT.jar
+```
+
+Spring Boot's logging has been excluded in favor of log4j2 directly. In order to accommodate the Spring dependencies that use SLF4J, the log4j-slf4j-impl dependency has been added. The SLF4J dep is needed to eliminate the following error in the logs:
+```commandline
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+```
+See https://stackoverflow.com/a/41500347 for detail.
+
+*Other*
+* https://www.baeldung.com/spring-boot-logging
 
 ####Reference
 
@@ -46,5 +63,6 @@ Project structure
 * https://docs.spring.io/spring-hateoas/docs/1.0.0.M1/reference/html/#migrate-to-1.0 - more migration details
 
 **REST Principles**
+* https://restfulapi.net/http-methods/
 * https://en.wikipedia.org/wiki/Hypertext_Application_Language
 * https://en.wikipedia.org/wiki/HATEOAS

@@ -7,4 +7,11 @@ public interface ParserConfigService {
 
   List<ParserChain> findAll();
 
+  ParserChain create(ParserChain chain);
+
+  ParserChain read(String id);
+
+  ParserChain update(String id);
+
+  boolean delete(String id);
 }

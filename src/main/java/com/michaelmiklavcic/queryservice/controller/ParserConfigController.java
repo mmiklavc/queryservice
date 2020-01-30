@@ -18,24 +18,51 @@
 
 package com.michaelmiklavcic.queryservice.controller;
 
+import com.michaelmiklavcic.queryservice.common.ApplicationConstants;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import com.michaelmiklavcic.queryservice.service.ParserConfigService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(value = ApplicationConstants.API_CHAINS_URL)
 public class ParserConfigController {
 
   @Autowired
   private ParserConfigService service;
 
-  @GetMapping("/parserconfigs")
+  @GetMapping()
   ResponseEntity<List<ParserChain>> findAll() {
     List<ParserChain> configs = service.findAll();
     return ResponseEntity.ok(configs);
+  }
+
+  // create
+  // read
+  @GetMapping(value = "/{id}")
+  ResponseEntity<ParserChain> read(@PathVariable String id) {
+    ParserChain chain = service.read(id);
+    if (null == chain) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.ok(chain);
+    }
+  }
+
+  // update
+  @DeleteMapping(value = "/{id}")
+  ResponseEntity<Void> delete(@PathVariable String id) {
+    if (service.delete(id)) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
 }

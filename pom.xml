@@ -30,9 +30,12 @@
 
         <!-- main dependency versions -->
         <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+        <evo-inflector.version>1.2.2</evo-inflector.version>
+        <log4j2.version>2.13.0</log4j2.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
-        <log4j2.version>2.13.0</log4j2.version>
+        <swagger.version>2.9.2</swagger.version>
+        <!--        <swagger.version>2.5.0</swagger.version>-->
 
         <!-- test dependency versions -->
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
@@ -65,11 +68,35 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <!-- Rely on our own log4j2 dependency -->
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>2.13.0</version>
+            </dependency>
+            <!--
+                        <dependency>
+                            <groupId>org.apache.logging.log4j</groupId>
+                            <artifactId>log4j-to-slf4j</artifactId>
+                            <version>2.12.1</version>
+                        </dependency>
+            -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-hateoas</artifactId>
                 <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.atteo</groupId>
+                <artifactId>evo-inflector</artifactId>
+                <version>${evo-inflector.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -87,6 +114,12 @@
                 <version>${log4j2.version}</version>
             </dependency>
             <dependency>
+                <!-- Used for the servlet container, e.g. Tomcat -->
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-web</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
@@ -95,6 +128,16 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
 
             <!-- Test Deps -->
@@ -151,12 +194,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- This was needed for model assembler to work with HATEOS. Not using, but leaving here for now -->
-        <dependency>
-            <groupId>org.atteo</groupId>
-            <artifactId>evo-inflector</artifactId>
-            <version>1.2.2</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -165,10 +202,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- Not using HATEOS, but keeping it here so the sample code compiles -->
         <dependency>
+            <!-- Not using HATEOS, but keeping it here so the sample code compiles -->
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+        <dependency>
+            <!-- This was needed for model assembler to work with HATEOS. Not using, but leaving here for now -->
+            <groupId>org.atteo</groupId>
+            <artifactId>evo-inflector</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -179,12 +221,29 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
+            <!-- Route Spring SLF4J through log4j2 -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
 
         <!-- Test Deps -->
@@ -230,7 +289,7 @@
                         <createDependencyReducedPom>true</createDependencyReducedPom>
                         <artifactSet>
                             <excludes>
-                                &lt;!&ndash; Exclude all JUnit deps from the uber jar &ndash;&gt;
+                                <!-- Exclude all JUnit deps from the uber jar -->
                                 <exclude>org.junit*:*</exclude>
                             </excludes>
                         </artifactSet>
