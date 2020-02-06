@@ -19,14 +19,20 @@
 package com.michaelmiklavcic.queryservice.controller;
 
 import com.michaelmiklavcic.queryservice.common.ApplicationConstants;
+import com.michaelmiklavcic.queryservice.config.AppProperties;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import com.michaelmiklavcic.queryservice.service.ParserConfigService;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,19 +41,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class ParserConfigController {
 
   @Autowired
-  private ParserConfigService service;
+  ParserConfigService service;
+  @Autowired
+  AppProperties appProperties;
 
   @GetMapping()
   ResponseEntity<List<ParserChain>> findAll() {
-    List<ParserChain> configs = service.findAll();
+    String configPath = appProperties.getConfigPath();
+    List<ParserChain> configs = service.findAll(Paths.get(configPath));
     return ResponseEntity.ok(configs);
   }
 
-  // create
-  // read
+  @PostMapping()
+  ResponseEntity<ParserChain> create(@RequestBody ParserChain chain) throws IOException {
+    String configPath = appProperties.getConfigPath();
+    ParserChain createdChain = service.create(chain, Paths.get(configPath));
+    if (null == createdChain) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.created(URI.create(
+          ApplicationConstants.API_CHAINS_READ_URL.replace("{id}", createdChain.getId())))
+          .body(createdChain);
+    }
+  }
+
   @GetMapping(value = "/{id}")
-  ResponseEntity<ParserChain> read(@PathVariable String id) {
-    ParserChain chain = service.read(id);
+  ResponseEntity<ParserChain> read(@PathVariable String id) throws IOException {
+    String configPath = appProperties.getConfigPath();
+    ParserChain chain = service.read(id, Paths.get(configPath));
     if (null == chain) {
       return ResponseEntity.notFound().build();
     } else {
@@ -55,10 +76,12 @@ public class ParserConfigController {
     }
   }
 
-  // update
+  // TODO - update endpoint
+
   @DeleteMapping(value = "/{id}")
-  ResponseEntity<Void> delete(@PathVariable String id) {
-    if (service.delete(id)) {
+  ResponseEntity<Void> delete(@PathVariable String id) throws IOException {
+    String configPath = appProperties.getConfigPath();
+    if (service.delete(id, Paths.get(configPath))) {
       return ResponseEntity.noContent().build();
     } else {
       return ResponseEntity.notFound().build();

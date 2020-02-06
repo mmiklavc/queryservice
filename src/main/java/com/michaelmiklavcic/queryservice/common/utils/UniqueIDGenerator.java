@@ -16,24 +16,26 @@
  * limitations under the License.
  */
 
-package com.michaelmiklavcic.queryservice.config;
+package com.michaelmiklavcic.queryservice.common.utils;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@Configuration
-public class MainConfiguration {
+public class UniqueIDGenerator implements IDGenerator {
 
-//  @Autowired
-//  Environment environment;
+  // TODO need a non-memory-only implementation
+  private static AtomicInteger currentID;
+  private int seed;
 
-  @Bean
-  public AppProperties appProperties() {
-    return new AppProperties();
+  public UniqueIDGenerator() {
+    this(0);
   }
 
-//  @Bean
-//  public SimpleRepresentationModelAssembler<ParserChain> modelAssembler() {
-//    return new BasicModelAssembler<>();
-//  }
+  public UniqueIDGenerator(int seed) {
+    currentID = new AtomicInteger(seed);
+  }
+
+  @Override
+  public String generate() {
+    return Integer.toString(currentID.addAndGet(1));
+  }
 }

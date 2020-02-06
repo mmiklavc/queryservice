@@ -18,25 +18,33 @@
 
 package com.michaelmiklavcic.queryservice.controller;
 
+import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_CREATE_URL;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_DELETE_URL;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_READ_URL;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_URL;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.michaelmiklavcic.queryservice.common.utils.JSONUtils;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import com.michaelmiklavcic.queryservice.service.ParserConfigService;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.adrianwalker.multilinestring.Multiline;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -54,24 +62,29 @@ public class ParserConfigControllerTest {
   private MockMvc mvc;
   @MockBean
   private ParserConfigService service;
-  private String chainId = "chain1";
+  private static int numFields = 0;
+  private final String chainIdOne = "1";
+  private final String chainNameOne = "chain1";
 
-  /**
-   * hello
-   */
-  @Multiline
-  public static String basicChainConfig;
+  @BeforeAll
+  public static void beforeAll() {
+    Method[] method = ParserChain.class.getMethods();
+    for (Method m : method) {
+      if (m.getName().startsWith("set")) {
+        numFields++;
+      }
+    }
+  }
 
   @Test
   public void returns_list_of_all_chains() throws Exception {
-    given(service.findAll()).willReturn(
+    given(service.findAll(isA(Path.class))).willReturn(
         Arrays.asList(
-            new ParserChain("1", "chain1"),
-            new ParserChain("2", "chain2"),
-            new ParserChain("3", "chain3")
+            new ParserChain().setId("1").setName("chain1"),
+            new ParserChain().setId("2").setName("chain2"),
+            new ParserChain().setId("3").setName("chain3")
         ));
     mvc.perform(get(API_CHAINS_URL).accept(MediaType.APPLICATION_JSON))
-//        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.*", instanceOf(List.class)))
@@ -86,66 +99,87 @@ public class ParserConfigControllerTest {
 
   @Test
   public void returns_empty_list_when_no_chains() throws Exception {
-    given(service.findAll()).willReturn(Collections.emptyList());
+    given(service.findAll(isA(Path.class))).willReturn(Collections.emptyList());
     mvc.perform(get(API_CHAINS_URL).accept(MediaType.APPLICATION_JSON))
-//        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.*", instanceOf(List.class)))
         .andExpect(jsonPath("$.*", hasSize(0)));
   }
 
+  /**
+   * {
+   *   "name" : "{name}"
+   * }
+   */
+  @Multiline
+  public static String createChainJSON;
+
+  @Test
+  public void creates_chain() throws Exception {
+    String json = createChainJSON.replace("{name}", chainNameOne);
+    ParserChain chain = JSONUtils.INSTANCE.load(json, ParserChain.class);
+    ParserChain expected = JSONUtils.INSTANCE.load(json, ParserChain.class);
+    expected.setId(chainIdOne);
+    given(service.create(eq(chain), isA(Path.class))).willReturn(expected);
+    mvc.perform(post(API_CHAINS_CREATE_URL)
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json))
+        .andExpect(status().isCreated())
+        .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(
+            header().string(HttpHeaders.LOCATION, API_CHAINS_READ_URL.replace("{id}", chainIdOne)))
+        .andExpect(jsonPath("$.*", hasSize(numFields)))
+        .andExpect(jsonPath("$.id", is(chainIdOne)))
+        .andExpect(jsonPath("$.name", is(chainNameOne)));
+  }
+
+  /**
+   * {
+   *   "id" : "{id}",
+   *   "name" : "{name}"
+   * }
+   */
+  @Multiline
+  public static String readChainJSON;
+
   @Test
   public void read_chain_by_id_returns_chain_config() throws Exception {
-    final ParserChain chain = new ParserChain("1", "chain1");
-    given(service.read(chainId)).willReturn(chain);
+    String json = readChainJSON.replace("{id}", chainIdOne).replace("{name}", chainNameOne);
+    final ParserChain chain = JSONUtils.INSTANCE.load(json, ParserChain.class);
+    given(service.read(eq(chainIdOne), isA(Path.class))).willReturn(chain);
     mvc.perform(
-        get(API_CHAINS_READ_URL.replace("{id}", chainId)).accept(MediaType.APPLICATION_JSON))
-//        .andDo(print())
+        get(API_CHAINS_READ_URL.replace("{id}", chainIdOne)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(jsonPath("$.name", is("chain1")))
-        .andExpect(jsonPath("$.id", is("1")));
+        .andExpect(jsonPath("$.id", is(chainIdOne)))
+        .andExpect(jsonPath("$.name", is(chainNameOne)));
   }
 
   @Test
   public void read_chain_by_nonexistent_id_returns_not_found() throws Exception {
-    given(service.read(chainId)).willReturn(null);
+    given(service.read(eq(chainIdOne), isA(Path.class))).willReturn(null);
     mvc.perform(
-        get(API_CHAINS_READ_URL.replace("{id}", chainId)).accept(MediaType.APPLICATION_JSON))
-//        .andDo(print())
+        get(API_CHAINS_READ_URL.replace("{id}", chainIdOne)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
-/*
-  @Test
-  public void creates_chain() throws Exception {
-    ParserChain chain = new ParserChain(chainConfig);
-    given(service.create(chain)).willReturn(chain);
-    mvc.perform(get("/parserconfig/chains").accept(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(jsonPath("$.*", instanceOf(List.class)))
-        .andExpect(jsonPath("$.*", hasSize(0)));
-  }
-*/
-
   @Test
   public void deleting_existing_chain_succeeds() throws Exception {
-    given(service.delete(chainId)).willReturn(true);
+    given(service.delete(eq(chainIdOne), isA(Path.class))).willReturn(true);
     mvc.perform(
-        delete(API_CHAINS_DELETE_URL.replace("{id}", chainId)).accept(MediaType.APPLICATION_JSON))
-//        .andDo(print())
+        delete(API_CHAINS_DELETE_URL.replace("{id}", chainIdOne))
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
   }
 
   @Test
   public void deleting_nonexistent_chain_returns_not_found() throws Exception {
-    given(service.delete(chainId)).willReturn(false);
+    given(service.delete(eq(chainIdOne), isA(Path.class))).willReturn(false);
     mvc.perform(
-        delete(API_CHAINS_DELETE_URL.replace("{id}", chainId)).accept(MediaType.APPLICATION_JSON))
-//        .andDo(print())
+        delete(API_CHAINS_DELETE_URL.replace("{id}", chainIdOne))
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 }

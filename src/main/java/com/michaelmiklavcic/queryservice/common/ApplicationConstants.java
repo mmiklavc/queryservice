@@ -18,12 +18,16 @@
 
 package com.michaelmiklavcic.queryservice.common;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 public class ApplicationConstants {
 
+  public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
   public static final String API_BASE_URL = "/api/v1/parserconfig";
   public static final String API_CHAINS_URL = API_BASE_URL + "/chains";
-  public static final String API_CHAINS_CREATE_URL = API_CHAINS_URL + "/{id}";
-  public static final String API_CHAINS_READ_URL = API_CHAINS_CREATE_URL;
-  public static final String API_CHAINS_UPDATE_URL = API_CHAINS_CREATE_URL;
-  public static final String API_CHAINS_DELETE_URL = API_CHAINS_CREATE_URL;
+  public static final String API_CHAINS_CREATE_URL = API_CHAINS_URL;
+  public static final String API_CHAINS_READ_URL = API_CHAINS_URL + "/{id}";
+  public static final String API_CHAINS_UPDATE_URL = API_CHAINS_READ_URL;
+  public static final String API_CHAINS_DELETE_URL = API_CHAINS_READ_URL;
 }

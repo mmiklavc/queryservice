@@ -18,7 +18,12 @@
 
 package com.michaelmiklavcic.queryservice.service;
 
+import com.michaelmiklavcic.queryservice.common.utils.IDGenerator;
+import com.michaelmiklavcic.queryservice.common.utils.JSONUtils;
+import com.michaelmiklavcic.queryservice.common.utils.UniqueIDGenerator;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -26,31 +31,51 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileBasedParserConfigService implements ParserConfigService {
 
+  private IDGenerator idGenerator;
+
+  public FileBasedParserConfigService() {
+    this.idGenerator = new UniqueIDGenerator();
+  }
+
+  //  @Autowired
+  public FileBasedParserConfigService(IDGenerator idGenerator) {
+    this.idGenerator = idGenerator;
+  }
+
   @Override
-  public List<ParserChain> findAll() {
+  public List<ParserChain> findAll(Path path) {
     return Arrays.asList(
-        new ParserChain("1", "chain1"),
-        new ParserChain("2", "chain2"),
-        new ParserChain("3", "chain3"));
+        new ParserChain().setId("1").setName("chain1"),
+        new ParserChain().setId("2").setName("chain2"),
+        new ParserChain().setId("3").setName("chain3")
+    );
   }
 
   @Override
-  public ParserChain create(ParserChain chain) {
-    return null;
+  public ParserChain create(ParserChain chain, Path path) throws IOException {
+    chain.setId(idGenerator.generate());
+    writeChain(chain, path);
+    return chain;
+  }
+
+  private void writeChain(ParserChain chain, Path outPath) throws IOException {
+    String json = JSONUtils.INSTANCE.toJSON(chain, true);
+//    File out = new File()
+//    FileUtils.writeStringToFile(out, json, ApplicationConstants.DEFAULT_CHARSET);
   }
 
   @Override
-  public ParserChain read(String id) {
-    return null;
+  public ParserChain read(String id, Path path) {
+    return new ParserChain().setId("1").setName("chain1");
   }
 
   @Override
-  public ParserChain update(String id) {
-    return null;
+  public ParserChain update(String id, Path path) {
+    return new ParserChain().setId("1").setName("chain1");
   }
 
   @Override
-  public boolean delete(String id) {
-    return false;
+  public boolean delete(String id, Path path) {
+    return true;
   }
 }

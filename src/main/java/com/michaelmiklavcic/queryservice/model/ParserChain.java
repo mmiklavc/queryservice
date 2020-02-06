@@ -28,25 +28,22 @@ public class ParserChain {
   public ParserChain() {
   }
 
-  public ParserChain(String id, String name) {
-    this.id = id;
-    this.name = name;
-  }
-
   public String getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public ParserChain setId(String id) {
     this.id = id;
+    return this;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public ParserChain setName(String name) {
     this.name = name;
+    return this;
   }
 
   @Override
