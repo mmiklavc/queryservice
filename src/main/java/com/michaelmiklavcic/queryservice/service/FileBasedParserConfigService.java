@@ -23,7 +23,10 @@ import com.michaelmiklavcic.queryservice.common.utils.JSONUtils;
 import com.michaelmiklavcic.queryservice.common.utils.UniqueIDGenerator;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -37,7 +40,6 @@ public class FileBasedParserConfigService implements ParserConfigService {
     this.idGenerator = new UniqueIDGenerator();
   }
 
-  //  @Autowired
   public FileBasedParserConfigService(IDGenerator idGenerator) {
     this.idGenerator = idGenerator;
   }
@@ -54,19 +56,38 @@ public class FileBasedParserConfigService implements ParserConfigService {
   @Override
   public ParserChain create(ParserChain chain, Path path) throws IOException {
     chain.setId(idGenerator.generate());
-    writeChain(chain, path);
+    Path out = Paths.get(getName(chain) + ".json");
+    out = path.resolve(out);
+    writeChain(chain, out);
     return chain;
   }
 
+  private String getName(ParserChain chain) {
+    return chain.getId() + "_" + chain.getName();
+  }
+
   private void writeChain(ParserChain chain, Path outPath) throws IOException {
-    String json = JSONUtils.INSTANCE.toJSON(chain, true);
-//    File out = new File()
-//    FileUtils.writeStringToFile(out, json, ApplicationConstants.DEFAULT_CHARSET);
+    byte[] bytes = JSONUtils.INSTANCE.toJSONPretty(chain);
+    Files.write(outPath, bytes);
   }
 
   @Override
-  public ParserChain read(String id, Path path) {
-    return new ParserChain().setId("1").setName("chain1");
+  public ParserChain read(String id, Path path) throws IOException {
+    Path inPath = findFile(id, path);
+    return JSONUtils.INSTANCE.load(inPath.toFile(), ParserChain.class);
+  }
+
+  private Path findFile(String id, Path root) throws IOException {
+    try (DirectoryStream<Path> files = Files.newDirectoryStream(root)) {
+      for (Path file : files) {
+        System.out.println(file.getFileName());
+        if (file.getFileName().toString().startsWith(String.format("%s_", id))) {
+          System.out.println(file);
+          return file;
+        }
+      }
+    }
+    throw new IOException("No file found with id=" + id);
   }
 
   @Override

@@ -24,6 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.michaelmiklavcic.queryservice.common.utils.UniqueIDGenerator;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,10 +36,12 @@ public class FileBasedParserConfigServiceTest {
   private Path configPath;
 
   @BeforeEach
-  public void beforeEach() {
+  public void beforeEach() throws IOException {
     int seed = 0;
     idGenerator = new UniqueIDGenerator(seed);
     service = new FileBasedParserConfigService(idGenerator);
+    String tempDirPrefix = this.getClass().getName();
+    configPath = Files.createTempDirectory(tempDirPrefix);
   }
 
   @Test
