@@ -20,25 +20,30 @@ package com.michaelmiklavcic.queryservice.service;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
 
-import com.michaelmiklavcic.queryservice.common.utils.UniqueIDGenerator;
+import com.michaelmiklavcic.queryservice.common.utils.IDGenerator;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class FileBasedParserConfigServiceTest {
 
-  private UniqueIDGenerator idGenerator;
+  @Mock
+  private IDGenerator<Long> idGenerator;
   private FileBasedParserConfigService service;
   private Path configPath;
 
   @BeforeEach
   public void beforeEach() throws IOException {
-    int seed = 0;
-    idGenerator = new UniqueIDGenerator(seed);
+    when(idGenerator.incrementAndGet()).thenReturn(1L, 2L, 3L);
     service = new FileBasedParserConfigService(idGenerator);
     String tempDirPrefix = this.getClass().getName();
     configPath = Files.createTempDirectory(tempDirPrefix);

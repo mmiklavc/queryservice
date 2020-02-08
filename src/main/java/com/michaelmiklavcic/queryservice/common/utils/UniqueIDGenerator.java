@@ -18,24 +18,52 @@
 
 package com.michaelmiklavcic.queryservice.common.utils;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 
-public class UniqueIDGenerator implements IDGenerator {
+public class UniqueIDGenerator implements IDGenerator<Long> {
 
-  // TODO need a non-memory-only implementation
-  private static AtomicInteger currentID;
-  private int seed;
+  public static final String ID_FILENAME = "idgenerator";
+  private long seed;
+  private final Path idFile;
+  private Path idGenSourceDir;
 
-  public UniqueIDGenerator() {
-    this(0);
+  public UniqueIDGenerator(Path idGenSourceDir) {
+    this(idGenSourceDir, 0L);
   }
 
-  public UniqueIDGenerator(int seed) {
-    currentID = new AtomicInteger(seed);
+  public UniqueIDGenerator(Path idGenSourceDir, long seed) {
+    this.idGenSourceDir = idGenSourceDir;
+    this.idFile = idGenSourceDir.resolve(Paths.get(ID_FILENAME));
+    this.seed = seed;
   }
 
   @Override
-  public String generate() {
-    return Integer.toString(currentID.addAndGet(1));
+  public Long incrementAndGet() {
+    if (Files.exists(idFile)) {
+      try {
+        // read value
+        List<String> lines = Files.readAllLines(idFile);
+        long id = Long.parseLong(lines.get(0));
+        // write value back out
+        Files.write(idFile, Long.toString(++id).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        return id;
+      } catch (IOException e) {
+        throw new RuntimeException("Unable to find and increment id", e);
+      }
+    } else {
+      try {
+        long id = seed;
+        // write value back out
+        Files.write(idFile, Long.toString(++id).getBytes());
+        return id;
+      } catch (IOException e) {
+        throw new RuntimeException("Unable to find and increment id", e);
+      }
+    }
   }
 }

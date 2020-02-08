@@ -20,7 +20,6 @@ package com.michaelmiklavcic.queryservice.service;
 
 import com.michaelmiklavcic.queryservice.common.utils.IDGenerator;
 import com.michaelmiklavcic.queryservice.common.utils.JSONUtils;
-import com.michaelmiklavcic.queryservice.common.utils.UniqueIDGenerator;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -29,18 +28,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FileBasedParserConfigService implements ParserConfigService {
 
-  private IDGenerator idGenerator;
+  @Autowired
+  private IDGenerator<Long> idGenerator;
 
-  public FileBasedParserConfigService() {
-    this.idGenerator = new UniqueIDGenerator();
-  }
-
-  public FileBasedParserConfigService(IDGenerator idGenerator) {
+  @Autowired
+  public FileBasedParserConfigService(IDGenerator<Long> idGenerator) {
     this.idGenerator = idGenerator;
   }
 
@@ -55,7 +53,7 @@ public class FileBasedParserConfigService implements ParserConfigService {
 
   @Override
   public ParserChain create(ParserChain chain, Path path) throws IOException {
-    chain.setId(idGenerator.generate());
+    chain.setId(Long.toString(idGenerator.incrementAndGet()));
     Path out = Paths.get(getName(chain) + ".json");
     out = path.resolve(out);
     writeChain(chain, out);

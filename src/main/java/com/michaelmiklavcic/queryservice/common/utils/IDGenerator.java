@@ -1,7 +1,6 @@
 package com.michaelmiklavcic.queryservice.common.utils;
 
-public interface IDGenerator {
+public interface IDGenerator<T> {
 
-  String generate();
-
+  T incrementAndGet();
 }
