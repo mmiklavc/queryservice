@@ -17,7 +17,7 @@ By default, we expose only the `health` and `info` endpoints, which is also the 
 
 View the exposed Actuator endpoints by going to [http://&lt;hostname&gt;:&lt;port&gt;/actuator/](http://<hostname>:<port>/actuator/)
 
-####Enabling Endpoints
+#### Enabling Endpoints
 
 Instructions for enabling Actuator endpoints can be found here - [Enabling Endpoints](https://docs.spring.io/spring-boot/docs/2.2.2.RELEASE/reference/htmlsingle/#production-ready-endpoints-enabling-endpoints)
 
@@ -51,7 +51,7 @@ See https://stackoverflow.com/a/41500347 for detail.
 *Other*
 * https://www.baeldung.com/spring-boot-logging
 
-####Reference
+#### Reference
 
 **Spring**
 
