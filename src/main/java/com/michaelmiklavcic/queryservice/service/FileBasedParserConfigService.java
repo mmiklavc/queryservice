@@ -78,9 +78,7 @@ public class FileBasedParserConfigService implements ParserConfigService {
   private Path findFile(String id, Path root) throws IOException {
     try (DirectoryStream<Path> files = Files.newDirectoryStream(root)) {
       for (Path file : files) {
-        System.out.println(file.getFileName());
         if (file.getFileName().toString().startsWith(String.format("%s_", id))) {
-          System.out.println(file);
           return file;
         }
       }
