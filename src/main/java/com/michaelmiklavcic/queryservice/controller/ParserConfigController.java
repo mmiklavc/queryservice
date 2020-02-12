@@ -76,7 +76,21 @@ public class ParserConfigController {
     }
   }
 
-  // TODO - update endpoint
+  @PostMapping(value = "/{id}")
+  ResponseEntity<ParserChain> update(@RequestBody ParserChain chain, @PathVariable String id)
+      throws IOException {
+    String configPath = appProperties.getConfigPath();
+    try {
+      ParserChain updatedChain = service.update(id, chain, Paths.get(configPath));
+      if (null == updatedChain) {
+        return ResponseEntity.notFound().build();
+      } else {
+        return ResponseEntity.ok(updatedChain);
+      }
+    } catch (IOException ioe) {
+      throw new RuntimeException("Unable to update configuration with id=" + id);
+    }
+  }
 
   @DeleteMapping(value = "/{id}")
   ResponseEntity<Void> delete(@PathVariable String id) throws IOException {

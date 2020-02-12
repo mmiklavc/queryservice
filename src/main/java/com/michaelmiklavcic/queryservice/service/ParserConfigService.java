@@ -13,7 +13,7 @@ public interface ParserConfigService {
 
   ParserChain read(String id, Path path) throws IOException;
 
-  ParserChain update(String id, Path path) throws IOException;
+  ParserChain update(String id, ParserChain chain, Path path) throws IOException;
 
   boolean delete(String id, Path path) throws IOException;
 }

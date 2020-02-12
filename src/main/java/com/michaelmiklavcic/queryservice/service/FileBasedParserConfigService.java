@@ -87,7 +87,7 @@ public class FileBasedParserConfigService implements ParserConfigService {
   }
 
   @Override
-  public ParserChain update(String id, Path path) {
+  public ParserChain update(String id, ParserChain chain, Path path) {
     return new ParserChain().setId("1").setName("chain1");
   }
 

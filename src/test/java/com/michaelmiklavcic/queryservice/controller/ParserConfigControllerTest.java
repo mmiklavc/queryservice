@@ -21,6 +21,7 @@ package com.michaelmiklavcic.queryservice.controller;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_CREATE_URL;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_DELETE_URL;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_READ_URL;
+import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_UPDATE_URL;
 import static com.michaelmiklavcic.queryservice.common.ApplicationConstants.API_CHAINS_URL;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -162,6 +163,31 @@ public class ParserConfigControllerTest {
     given(service.read(eq(chainIdOne), isA(Path.class))).willReturn(null);
     mvc.perform(
         get(API_CHAINS_READ_URL.replace("{id}", chainIdOne)).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void update_chain_by_id_returns_updated_chain_config() throws Exception {
+    String updateJson = readChainJSON.replace("{id}", chainIdOne).replace("{name}", chainNameOne);
+    final ParserChain updatedChain = JSONUtils.INSTANCE.load(updateJson, ParserChain.class);
+    given(service.update(eq(chainIdOne), eq(updatedChain), isA(Path.class)))
+        .willReturn(updatedChain);
+    mvc.perform(post(API_CHAINS_UPDATE_URL.replace("{id}", chainIdOne))
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(updateJson))
+        .andExpect(status().isOk())
+        .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(jsonPath("$.*", hasSize(numFields)))
+        .andExpect(jsonPath("$.id", is(chainIdOne)))
+        .andExpect(jsonPath("$.name", is(chainNameOne)));
+  }
+
+  @Test
+  public void update_chain_by_nonexistent_id_returns_not_found() throws Exception {
+    given(service.update(eq(chainIdOne), isA(ParserChain.class), isA(Path.class))).willReturn(null);
+    mvc.perform(
+        get(API_CHAINS_UPDATE_URL.replace("{id}", chainIdOne)).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
