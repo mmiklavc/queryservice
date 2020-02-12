@@ -28,9 +28,9 @@ import java.util.List;
 public class UniqueIDGenerator implements IDGenerator<Long> {
 
   public static final String ID_FILENAME = "idgenerator";
-  private long seed;
+  private final long seed;
   private final Path idFile;
-  private Path idGenSourceDir;
+  private final Path idGenSourceDir;
 
   public UniqueIDGenerator(Path idGenSourceDir) {
     this(idGenSourceDir, 0L);
@@ -44,25 +44,24 @@ public class UniqueIDGenerator implements IDGenerator<Long> {
 
   @Override
   public Long incrementAndGet() {
-    if (Files.exists(idFile)) {
-      try {
-        // read value
-        List<String> lines = Files.readAllLines(idFile);
-        long id = Long.parseLong(lines.get(0));
-        // write value back out
-        Files.write(idFile, Long.toString(++id).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-        return id;
-      } catch (IOException e) {
-        throw new RuntimeException("Unable to find and increment id", e);
-      }
-    } else {
-      try {
-        long id = seed;
-        // write value back out
-        Files.write(idFile, Long.toString(++id).getBytes());
-        return id;
-      } catch (IOException e) {
-        throw new RuntimeException("Unable to find and increment id", e);
+    synchronized (UniqueIDGenerator.class) {
+      if (Files.exists(idFile)) {
+        try {
+          List<String> lines = Files.readAllLines(idFile);
+          long id = Long.parseLong(lines.get(0));
+          Files.write(idFile, Long.toString(++id).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+          return id;
+        } catch (IOException e) {
+          throw new RuntimeException("Unable to find and increment id", e);
+        }
+      } else {
+        try {
+          long id = seed;
+          Files.write(idFile, Long.toString(++id).getBytes());
+          return id;
+        } catch (IOException e) {
+          throw new RuntimeException("Unable to find and increment id", e);
+        }
       }
     }
   }
