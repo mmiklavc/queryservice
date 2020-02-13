@@ -54,41 +54,51 @@ public class FileBasedParserConfigService implements ParserConfigService {
   @Override
   public ParserChain create(ParserChain chain, Path path) throws IOException {
     chain.setId(Long.toString(idGenerator.incrementAndGet()));
-    Path out = Paths.get(getName(chain) + ".json");
-    out = path.resolve(out);
-    writeChain(chain, out);
+    writeChain(chain, path);
     return chain;
   }
 
-  private String getName(ParserChain chain) {
-    return chain.getId() + "_" + chain.getName();
+  private void writeChain(ParserChain chain, Path outPath) throws IOException {
+    Path out = Paths.get(getFileName(chain.getId()));
+    out = outPath.resolve(out);
+    byte[] bytes = JSONUtils.INSTANCE.toJSONPretty(chain);
+    Files.write(out, bytes);
   }
 
-  private void writeChain(ParserChain chain, Path outPath) throws IOException {
-    byte[] bytes = JSONUtils.INSTANCE.toJSONPretty(chain);
-    Files.write(outPath, bytes);
+  private String getFileName(String id) {
+    return id + ".json";
   }
 
   @Override
   public ParserChain read(String id, Path path) throws IOException {
     Path inPath = findFile(id, path);
+    if (null == inPath) {
+      return null;
+    }
     return JSONUtils.INSTANCE.load(inPath.toFile(), ParserChain.class);
   }
 
   private Path findFile(String id, Path root) throws IOException {
     try (DirectoryStream<Path> files = Files.newDirectoryStream(root)) {
       for (Path file : files) {
-        if (file.getFileName().toString().startsWith(String.format("%s_", id))) {
+        if (file.getFileName().toString().equals(getFileName(id))) {
           return file;
         }
       }
     }
-    throw new IOException("No file found with id=" + id);
+    return null;
   }
 
   @Override
-  public ParserChain update(String id, ParserChain chain, Path path) {
-    return new ParserChain().setId("1").setName("chain1");
+  public ParserChain update(String id, ParserChain chain, Path path) throws IOException {
+    ParserChain readChain = read(id, path);
+    if (null == readChain) {
+      return null;
+    }
+    // enforce that the client cannot overwrite the chain ID
+    chain.setId(id);
+    writeChain(chain, path);
+    return read(id, path);
   }
 
   @Override

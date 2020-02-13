@@ -19,6 +19,8 @@
 package com.michaelmiklavcic.queryservice.service;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -52,10 +54,14 @@ public class FileBasedParserConfigServiceTest {
   @Test
   public void creates_parser_chain() throws IOException {
     ParserChain chain = new ParserChain().setName("chain1");
-    ParserChain actual = service.create(chain, configPath);
+    ParserChain result = service.create(chain, configPath);
+    ParserChain actual = service.read(result.getId(), configPath);
     ParserChain expected = new ParserChain().setId("1").setName("chain1");
     assertThat(actual, equalTo(expected));
   }
+
+  // TODO findall
+
 
   @Test
   public void reads_existing_parser_chain() throws IOException {
@@ -65,4 +71,36 @@ public class FileBasedParserConfigServiceTest {
     ParserChain expected = new ParserChain().setId("1").setName("chain1");
     assertThat(actual, equalTo(expected));
   }
+
+  @Test
+  public void updates_existing_parser_chain() throws IOException {
+    ParserChain chain = new ParserChain().setName("chain1");
+    service.create(chain, configPath);
+    chain.setName("UPDATEDchain1");
+    ParserChain actual = service.update("1", chain, configPath);
+    ParserChain expected = new ParserChain().setId("1").setName("UPDATEDchain1");
+    assertThat(actual, equalTo(expected));
+  }
+
+  @Test
+  public void updates_existing_parser_chain_without_changing_the_ID() throws IOException {
+    ParserChain chain = new ParserChain().setName("chain1");
+    service.create(chain, configPath);
+    chain.setId("NOBUENO");
+    chain.setName("UPDATEDchain1");
+    ParserChain actual = service.update("1", chain, configPath);
+    ParserChain expected = new ParserChain().setId("1").setName("UPDATEDchain1");
+    assertThat(actual, equalTo(expected));
+  }
+
+  @Test
+  public void returns_null_on_update_to_nonexistent_parser_chain() throws IOException {
+    ParserChain chain = new ParserChain().setName("chain1");
+    service.create(chain, configPath);
+    chain.setName("UPDATEDchain1");
+    ParserChain actual = service.update("5", chain, configPath);
+    assertThat(actual, is(nullValue()));
+  }
+
+  // TODO delete
 }

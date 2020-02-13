@@ -64,4 +64,11 @@ public class ParserChain {
     return Objects.hash(id, name);
   }
 
+  @Override
+  public String toString() {
+    return "ParserChain{" +
+        "id='" + id + '\'' +
+        ", name='" + name + '\'' +
+        '}';
+  }
 }
