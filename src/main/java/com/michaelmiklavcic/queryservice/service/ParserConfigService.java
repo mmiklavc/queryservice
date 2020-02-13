@@ -1,13 +1,14 @@
 package com.michaelmiklavcic.queryservice.service;
 
 import com.michaelmiklavcic.queryservice.model.ParserChain;
+import com.michaelmiklavcic.queryservice.model.ParserChainSummary;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
 public interface ParserConfigService {
 
-  List<ParserChain> findAll(Path path);
+  List<ParserChainSummary> findAll(Path path) throws IOException;
 
   ParserChain create(ParserChain chain, Path path) throws IOException;
 

@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.michaelmiklavcic.queryservice.common.utils.JSONUtils;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
+import com.michaelmiklavcic.queryservice.model.ParserChainSummary;
 import com.michaelmiklavcic.queryservice.service.ParserConfigService;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -81,9 +82,9 @@ public class ParserConfigControllerTest {
   public void returns_list_of_all_chains() throws Exception {
     given(service.findAll(isA(Path.class))).willReturn(
         Arrays.asList(
-            new ParserChain().setId("1").setName("chain1"),
-            new ParserChain().setId("2").setName("chain2"),
-            new ParserChain().setId("3").setName("chain3")
+            new ParserChainSummary().setId("1").setName("chain1"),
+            new ParserChainSummary().setId("2").setName("chain2"),
+            new ParserChainSummary().setId("3").setName("chain3")
         ));
     mvc.perform(get(API_CHAINS_URL).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())

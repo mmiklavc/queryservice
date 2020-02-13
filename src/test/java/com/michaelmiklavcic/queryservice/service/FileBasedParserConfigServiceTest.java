@@ -22,13 +22,18 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 
 import com.michaelmiklavcic.queryservice.common.utils.IDGenerator;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
+import com.michaelmiklavcic.queryservice.model.ParserChainSummary;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +50,7 @@ public class FileBasedParserConfigServiceTest {
 
   @BeforeEach
   public void beforeEach() throws IOException {
-    when(idGenerator.incrementAndGet()).thenReturn(1L, 2L, 3L);
+    when(idGenerator.incrementAndGet()).thenReturn(1L, 2L, 3L, 4L, 5L);
     service = new FileBasedParserConfigService(idGenerator);
     String tempDirPrefix = this.getClass().getName();
     configPath = Files.createTempDirectory(tempDirPrefix);
@@ -60,8 +65,22 @@ public class FileBasedParserConfigServiceTest {
     assertThat(actual, equalTo(expected));
   }
 
-  // TODO findall
-
+  @Test
+  public void findAll_returns_all_existing_parser_chain() throws IOException {
+    List<String> names = Arrays.asList("chain1", "chain2", "chain3", "chain4", "chain5");
+    for (String name : names) {
+      ParserChain chain = new ParserChain().setName(name);
+      service.create(chain, configPath);
+    }
+    List<ParserChainSummary> actual = service.findAll(configPath);
+    int id = 1;
+    List<ParserChainSummary> expected = new ArrayList<>();
+    for (String name : names) {
+      ParserChainSummary summary = new ParserChainSummary().setId("" + id++).setName(name);
+      expected.add(summary);
+    }
+    assertThat(actual, equalTo(expected));
+  }
 
   @Test
   public void reads_existing_parser_chain() throws IOException {
@@ -102,5 +121,24 @@ public class FileBasedParserConfigServiceTest {
     assertThat(actual, is(nullValue()));
   }
 
-  // TODO delete
+  @Test
+  public void deletes_parser_chain_by_id() throws IOException {
+    List<String> names = Arrays.asList("chain1", "chain2", "chain3");
+    for (String name : names) {
+      ParserChain chain = new ParserChain().setName("chain1");
+      service.create(chain, configPath);
+    }
+    final String idToDelete = "2";
+    assertThat("Should have 3 parser chains.", service.findAll(configPath), hasSize(names.size()));
+    assertThat("Should have returned true for a successfully deleted config.",
+        service.delete(idToDelete, configPath), equalTo(true));
+    assertThat("Should have 2 parser chains.", service.findAll(configPath),
+        hasSize(names.size() - 1));
+    assertThat("Should not have deleted parser chain.", service.read(idToDelete, configPath),
+        is(nullValue()));
+    assertThat("Should have returned false for a config we already deleted.",
+        service.delete(idToDelete, configPath), equalTo(false));
+    assertThat("Should still have 2 parser chains.", service.findAll(configPath),
+        hasSize(names.size() - 1));
+  }
 }

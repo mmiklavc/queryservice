@@ -21,12 +21,13 @@ package com.michaelmiklavcic.queryservice.service;
 import com.michaelmiklavcic.queryservice.common.utils.IDGenerator;
 import com.michaelmiklavcic.queryservice.common.utils.JSONUtils;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
+import com.michaelmiklavcic.queryservice.model.ParserChainSummary;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,12 +44,15 @@ public class FileBasedParserConfigService implements ParserConfigService {
   }
 
   @Override
-  public List<ParserChain> findAll(Path path) {
-    return Arrays.asList(
-        new ParserChain().setId("1").setName("chain1"),
-        new ParserChain().setId("2").setName("chain2"),
-        new ParserChain().setId("3").setName("chain3")
-    );
+  public List<ParserChainSummary> findAll(Path path) throws IOException {
+    List<ParserChainSummary> summaries = new ArrayList<>();
+    try (DirectoryStream<Path> files = Files.newDirectoryStream(path)) {
+      for (Path file : files) {
+        ParserChain chain = JSONUtils.INSTANCE.load(file.toFile(), ParserChain.class);
+        summaries.add(new ParserChainSummary(chain));
+      }
+    }
+    return summaries;
   }
 
   @Override
@@ -102,7 +106,12 @@ public class FileBasedParserConfigService implements ParserConfigService {
   }
 
   @Override
-  public boolean delete(String id, Path path) {
+  public boolean delete(String id, Path path) throws IOException {
+    Path deletePath = findFile(id, path);
+    if (null == deletePath) {
+      return false;
+    }
+    Files.delete(deletePath);
     return true;
   }
 }

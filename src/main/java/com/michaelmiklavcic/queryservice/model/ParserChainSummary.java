@@ -20,19 +20,24 @@ package com.michaelmiklavcic.queryservice.model;
 
 import java.util.Objects;
 
-public class ParserChain {
+public class ParserChainSummary {
 
   private String id;
   private String name;
 
-  public ParserChain() {
+  public ParserChainSummary() {
+  }
+
+  public ParserChainSummary(ParserChain chain) {
+    this.id = chain.getId();
+    this.name = chain.getName();
   }
 
   public String getId() {
     return id;
   }
 
-  public ParserChain setId(String id) {
+  public ParserChainSummary setId(String id) {
     this.id = id;
     return this;
   }
@@ -41,7 +46,7 @@ public class ParserChain {
     return name;
   }
 
-  public ParserChain setName(String name) {
+  public ParserChainSummary setName(String name) {
     this.name = name;
     return this;
   }
@@ -54,7 +59,7 @@ public class ParserChain {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ParserChain that = (ParserChain) o;
+    ParserChainSummary that = (ParserChainSummary) o;
     return Objects.equals(id, that.id) &&
         Objects.equals(name, that.name);
   }
@@ -66,10 +71,9 @@ public class ParserChain {
 
   @Override
   public String toString() {
-    return "ParserChain{" +
+    return "ParserChainSummary{" +
         "id='" + id + '\'' +
         ", name='" + name + '\'' +
         '}';
   }
-
 }

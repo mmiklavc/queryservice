@@ -21,6 +21,7 @@ package com.michaelmiklavcic.queryservice.controller;
 import com.michaelmiklavcic.queryservice.common.ApplicationConstants;
 import com.michaelmiklavcic.queryservice.config.AppProperties;
 import com.michaelmiklavcic.queryservice.model.ParserChain;
+import com.michaelmiklavcic.queryservice.model.ParserChainSummary;
 import com.michaelmiklavcic.queryservice.service.ParserConfigService;
 import java.io.IOException;
 import java.net.URI;
@@ -46,9 +47,9 @@ public class ParserConfigController {
   AppProperties appProperties;
 
   @GetMapping()
-  ResponseEntity<List<ParserChain>> findAll() {
+  ResponseEntity<List<ParserChainSummary>> findAll() throws IOException {
     String configPath = appProperties.getConfigPath();
-    List<ParserChain> configs = service.findAll(Paths.get(configPath));
+    List<ParserChainSummary> configs = service.findAll(Paths.get(configPath));
     return ResponseEntity.ok(configs);
   }
 
